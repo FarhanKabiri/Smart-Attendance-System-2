@@ -29,9 +29,18 @@ let currentClassName = null;
 let currentClassSection = null;
 const SESSION_DURATION = 5 * 60 * 1000; // 5 minutes
 
+
+const path = require("path");
+
+app.use(express.static(path.join(__dirname, "public")));
+
 app.get("/", (req, res) => {
-  res.send("Backend is working");
+  res.sendFile(path.join(__dirname, "public", "login.html"));
 });
+
+/// app.get("/", (req, res) => {
+///  res.send("Backend is working");
+/// }); 
 
 /* LOGIN */
 app.post("/login", (req, res) => {
