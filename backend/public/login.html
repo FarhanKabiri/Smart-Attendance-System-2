@@ -423,7 +423,7 @@
           loginData.lastName = lastName;
         }
         console.log("Logging in with:", loginData);
-        const res = await fetch("http://localhost:3000/login", {
+        const res = await fetch("https://smart-attendance-system-2-production.up.railway.app/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

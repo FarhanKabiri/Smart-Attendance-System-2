@@ -520,7 +520,7 @@
     currentClassSection = classSection;
 
     try {
-      const res = await fetch("http://localhost:3000/generate", {
+      const res = await fetch("https://smart-attendance-system-2-production.up.railway.app/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -565,7 +565,7 @@
     if (!currentSessionId) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/attendance/${currentSessionId}`);
+      const res = await fetch(`https://smart-attendance-system-2-production.up.railway.app/attendance/${currentSessionId}`);
       const data = await res.json();
 
       const tbody = document.getElementById("attendanceList");
@@ -609,7 +609,7 @@
     document.getElementById("exportStatus").innerText = "Exported";
     document.getElementById("exportStatus").style.color = "#2563eb";
 
-    window.open(`http://localhost:3000/export/${currentSessionId}`, "_blank");
+    window.open(`https://smart-attendance-system-2-production.up.railway.app/export/${currentSessionId}`, "_blank");
   }
 
   function logout() {
