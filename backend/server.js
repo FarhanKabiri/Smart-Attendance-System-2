@@ -7,13 +7,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const db = mysql.createConnection({
+
+const db = mysql.createPool(process.env.MYSQL_URL);
+
+
+ /*** const db = mysql.createConnection({
   host: process.env.MYSQLHOST,
   user: process.env.MYSQLUSER,
   password: process.env.MYSQLPASSWORD,
   database: process.env.MYSQLDATABASE,
   port: 3306
-});
+}); ***/
 
 db.connect((err) => {
   if (err) {
@@ -230,6 +234,5 @@ app.get("/export/:id", (req, res) => {
 });
 
 /* START SERVER */
-app.listen(3000, "0.0.0.0", () => {
-  console.log("Server running on http://localhost:3000");
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log("Server running"));
