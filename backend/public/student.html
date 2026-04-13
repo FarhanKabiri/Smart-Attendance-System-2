@@ -450,6 +450,7 @@
 
       <div class="button-row">
         <button class="refresh-btn" onclick="restartScanner()">Restart Scanner</button>
+        <button class="refresh-btn" onclick="flipCamera()" id="flipCameraBtn">Flip Camera</button>
         <button class="logout-btn" onclick="logout()">Logout</button>
       </div>
 
@@ -475,6 +476,8 @@
 
   const BACKEND_URL = "https://smart-attendance-system-2-production.up.railway.app";
   let html5QrCode;
+  let availableCameras = [];
+  let currentCameraIndex = 0;
 
   function showMessage(message, color, bgColor, borderColor) {
     resultMsg.innerText = message;
@@ -535,7 +538,20 @@ function startScanner() {
   html5QrCode = new Html5Qrcode("reader");
 
   Html5Qrcode.getCameras().then(devices => {
-    const cameraId = devices[0].id;
+    availableCameras = devices;
+    
+    // Try to find and select back camera (environment facing)
+    let selectedCameraIndex = 0;
+    for (let i = 0; i < devices.length; i++) {
+      if (devices[i].label.toLowerCase().includes('back') || 
+          devices[i].label.toLowerCase().includes('rear') ||
+          devices[i].label.toLowerCase().includes('environment')) {
+        selectedCameraIndex = i;
+        break;
+      }
+    }
+    currentCameraIndex = selectedCameraIndex;
+    const cameraId = devices[selectedCameraIndex].id;
 
     html5QrCode.start(
       cameraId,
@@ -551,9 +567,52 @@ function startScanner() {
         // ignore scan errors
       }
     );
+    
+    // Update flip button visibility based on number of cameras
+    const flipBtn = document.getElementById("flipCameraBtn");
+    if (availableCameras.length <= 1) {
+      flipBtn.style.display = "none";
+    }
   });
 
   showMessage("Waiting for scan...", "#374151", "#eff6ff", "#bfdbfe");
+}
+
+function flipCamera() {
+  if (availableCameras.length <= 1) {
+    alert("Only one camera available on this device.");
+    return;
+  }
+
+  // Stop current scanner
+  html5QrCode.stop().then(() => {
+    // Move to next camera
+    currentCameraIndex = (currentCameraIndex + 1) % availableCameras.length;
+    const cameraId = availableCameras[currentCameraIndex].id;
+    
+    document.getElementById("reader").innerHTML = "";
+    html5QrCode = new Html5Qrcode("reader");
+    
+    // Start with new camera
+    html5QrCode.start(
+      cameraId,
+      {
+        fps: 10,
+        qrbox: 250
+      },
+      (decodedText) => {
+        console.log("SCANNED:", decodedText);
+        onScanSuccess(decodedText);
+      },
+      (errorMessage) => {
+        // ignore scan errors
+      }
+    );
+    
+
+  }).catch(err => {
+    console.error("Error stopping camera:", err);
+  });
 }
 
   function restartScanner() {
