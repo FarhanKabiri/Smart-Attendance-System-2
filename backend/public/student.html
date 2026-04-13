@@ -252,6 +252,59 @@
       position: relative;
     }
 
+    .zoom-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 15px;
+      padding: 12px;
+      background: #f3f4f6;
+      border-radius: 12px;
+    }
+
+    .zoom-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      min-width: 50px;
+    }
+
+    #zoomSlider {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+      background: #d1d5db;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    #zoomSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(to right, #2563eb, #3b82f6);
+      cursor: pointer;
+    }
+
+    #zoomSlider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(to right, #2563eb, #3b82f6);
+      cursor: pointer;
+      border: none;
+    }
+
+    .zoom-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #2563eb;
+      min-width: 35px;
+      text-align: right;
+    }
+
     .footer-note {
       margin-top: 18px;
       font-size: 13px;
@@ -447,6 +500,12 @@
 
       <div id="reader" style="position: relative;"></div>
 
+      <div class="zoom-controls">
+        <span class="zoom-label">Zoom:</span>
+        <input type="range" id="zoomSlider" min="100" max="400" value="100" step="10">
+        <span class="zoom-value"><span id="zoomValue">1</span>x</span>
+      </div>
+
       <div class="status-box">
         <div class="status-label">Scan Status</div>
         <p id="resultMsg">Waiting for scan...</p>
@@ -479,6 +538,7 @@
 
   const BACKEND_URL = "https://smart-attendance-system-2-production.up.railway.app";
   let html5QrCode;
+  let currentZoom = 1;
 
   function showMessage(message, color, bgColor, borderColor) {
     resultMsg.innerText = message;
@@ -550,11 +610,21 @@ function startScanner() {
       }
     }
 
+    const constraints = {
+      video: {
+        deviceId: { exact: selectedCamera.id },
+        facingMode: 'environment',
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      }
+    };
+
     html5QrCode.start(
       selectedCamera.id,
       {
         fps: 10,
-        qrbox: 250
+        qrbox: 250,
+        videoConstraints: constraints.video
       },
       (decodedText) => {
         console.log("SCANNED:", decodedText);
@@ -563,10 +633,28 @@ function startScanner() {
       (errorMessage) => {
         // ignore scan errors
       }
-    );
+    ).then(() => {
+      applyZoom();
+    }).catch(err => {
+      console.error("Camera error:", err);
+    });
   });
 
   showMessage("Waiting for scan...", "#374151", "#eff6ff", "#bfdbfe");
+}
+
+function applyZoom() {
+  const video = document.querySelector("#reader video");
+  if (video) {
+    video.style.transform = `scale(${currentZoom})`;
+    video.style.transformOrigin = "center";
+  }
+}
+
+function handleZoomChange(e) {
+  currentZoom = e.target.value / 100;
+  document.getElementById("zoomValue").textContent = currentZoom.toFixed(1);
+  applyZoom();
 }
 
   function restartScanner() {
@@ -585,6 +673,11 @@ function startScanner() {
   }
 
   startScanner();
+
+  const zoomSlider = document.getElementById("zoomSlider");
+  if (zoomSlider) {
+    zoomSlider.addEventListener("input", handleZoomChange);
+  }
 </script>
 
 </body>
