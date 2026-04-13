@@ -780,16 +780,21 @@ function startScanner() {
   html5QrCode = new Html5Qrcode("reader");
 
   Html5Qrcode.getCameras().then(devices => {
-    let selectedCamera = devices[0];
-    
-    for (let i = 0; i < devices.length; i++) {
-      if (devices[i].label.toLowerCase().includes('back') || 
-          devices[i].label.toLowerCase().includes('rear') ||
-          devices[i].label.toLowerCase().includes('environment')) {
-        selectedCamera = devices[i];
-        break;
-      }
-    }
+let selectedCamera = devices[0];
+
+// Prefer "back" but NOT ultra-wide
+for (let i = 0; i < devices.length; i++) {
+  const label = devices[i].label.toLowerCase();
+
+  if (
+    (label.includes('back') || label.includes('rear')) &&
+    !label.includes('ultra') &&
+    !label.includes('wide')
+  ) {
+    selectedCamera = devices[i];
+    break;
+  }
+}
 
     const constraints = {
       video: {
