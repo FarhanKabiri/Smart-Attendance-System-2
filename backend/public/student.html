@@ -21,8 +21,20 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 30px;
+      padding: 12px;
       color: #111827;
+    }
+
+    @media (min-width: 640px) {
+      body {
+        padding: 20px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding: 30px;
+      }
     }
 
     .page-wrapper {
@@ -159,11 +171,17 @@
     }
 
     .right-panel {
-      padding: 25px 20px;
+      padding: 20px 18px;
       background: #f8fafc;
       display: flex;
       flex-direction: column;
       justify-content: center;
+    }
+
+    @media (min-width: 640px) {
+      .right-panel {
+        padding: 30px 28px;
+      }
     }
 
     @media (min-width: 768px) {
