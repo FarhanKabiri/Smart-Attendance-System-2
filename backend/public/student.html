@@ -248,19 +248,6 @@
       transform: translateY(-1px);
     }
 
-    .flip-camera-btn {
-      background: linear-gradient(to right, #2563eb, #3b82f6);
-      color: white;
-      padding: 10px 16px;
-      margin-top: 15px;
-      width: fit-content;
-    }
-
-    .flip-camera-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.25);
-    }
-
     .scanner-card {
       position: relative;
     }
@@ -460,8 +447,6 @@
 
       <div id="reader" style="position: relative;"></div>
 
-      <button class="flip-camera-btn" id="flipCameraBtn" onclick="flipCamera()">🔄 Flip Camera</button>
-
       <div class="status-box">
         <div class="status-label">Scan Status</div>
         <p id="resultMsg">Waiting for scan...</p>
@@ -494,8 +479,6 @@
 
   const BACKEND_URL = "https://smart-attendance-system-2-production.up.railway.app";
   let html5QrCode;
-  let availableCameras = [];
-  let currentCameraIndex = 0;
 
   function showMessage(message, color, bgColor, borderColor) {
     resultMsg.innerText = message;
@@ -556,23 +539,19 @@ function startScanner() {
   html5QrCode = new Html5Qrcode("reader");
 
   Html5Qrcode.getCameras().then(devices => {
-    availableCameras = devices;
+    let selectedCamera = devices[0];
     
-    // Try to find and select back camera (environment facing)
-    let selectedCameraIndex = 0;
     for (let i = 0; i < devices.length; i++) {
       if (devices[i].label.toLowerCase().includes('back') || 
           devices[i].label.toLowerCase().includes('rear') ||
           devices[i].label.toLowerCase().includes('environment')) {
-        selectedCameraIndex = i;
+        selectedCamera = devices[i];
         break;
       }
     }
-    currentCameraIndex = selectedCameraIndex;
-    const cameraId = devices[selectedCameraIndex].id;
 
     html5QrCode.start(
-      cameraId,
+      selectedCamera.id,
       {
         fps: 10,
         qrbox: 250
@@ -588,36 +567,6 @@ function startScanner() {
   });
 
   showMessage("Waiting for scan...", "#374151", "#eff6ff", "#bfdbfe");
-}
-
-function flipCamera() {
-  if (availableCameras.length <= 1) return;
-
-  html5QrCode.stop().then(() => {
-    currentCameraIndex = (currentCameraIndex + 1) % availableCameras.length;
-    const cameraId = availableCameras[currentCameraIndex].id;
-    
-    const readerDiv = document.getElementById("reader");
-    readerDiv.innerHTML = "";
-    
-    html5QrCode = new Html5Qrcode("reader");
-    
-    html5QrCode.start(
-      cameraId,
-      {
-        fps: 10,
-        qrbox: 250
-      },
-      (decodedText) => {
-        console.log("SCANNED:", decodedText);
-        onScanSuccess(decodedText);
-      },
-      () => {}
-    );
-
-  }).catch(err => {
-    console.error("Error stopping camera:", err);
-  });
 }
 
   function restartScanner() {
