@@ -248,30 +248,17 @@
       transform: translateY(-1px);
     }
 
-    #flipCameraBtn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      background: rgba(37, 99, 235, 0.9);
+    .flip-camera-btn {
+      background: linear-gradient(to right, #2563eb, #3b82f6);
       color: white;
-      border: none;
-      cursor: pointer;
-      font-size: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      transition: 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      padding: 0;
+      padding: 10px 16px;
+      margin-top: 15px;
+      width: fit-content;
     }
 
-    #flipCameraBtn:active {
-      background: rgba(37, 99, 235, 1);
-      transform: scale(0.95);
+    .flip-camera-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.25);
     }
 
     .scanner-card {
@@ -471,9 +458,9 @@
         will be submitted automatically.
       </p>
 
-      <div id="reader" style="position: relative;">
-        <button id="flipCameraBtn" onclick="flipCamera()">🔄</button>
-      </div>
+      <div id="reader" style="position: relative;"></div>
+
+      <button class="flip-camera-btn" id="flipCameraBtn" onclick="flipCamera()">🔄 Flip Camera</button>
 
       <div class="status-box">
         <div class="status-label">Scan Status</div>
@@ -611,7 +598,7 @@ function flipCamera() {
     const cameraId = availableCameras[currentCameraIndex].id;
     
     const readerDiv = document.getElementById("reader");
-    readerDiv.innerHTML = "<button id='flipCameraBtn' onclick='flipCamera()'>🔄</button>";
+    readerDiv.innerHTML = "";
     
     html5QrCode = new Html5Qrcode("reader");
     
