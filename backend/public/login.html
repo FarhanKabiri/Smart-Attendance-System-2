@@ -405,8 +405,10 @@
 
       errorMsg.innerText = "";
 
-      if (!email) {
-        errorMsg.innerText = "Please enter email.";
+      
+        // Basic validation of wayne email format
+      if (!email.endsWith("@wayne.edu")) {
+        errorMsg.innerText = "Please enter a valid Wayne State email address.";
         return;
       }
 
